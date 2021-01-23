@@ -1,0 +1,202 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Books Shopee
+servers:
+  - url: 'http://localhost:8080'
+paths:
+  /auth/signup:
+    post:
+      summary:
+      operationId: signup
+      requestBody:
+        description: Create new user
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDto'
+        required: true
+      responses:
+        200:
+          description: User Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+  /auth/user:
+    get:
+      summary: Get User Info
+      operationId: getUserInfo
+      responses:
+        200:
+          description: Return User Info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDto'
+        401:
+          description: Unauthorized User
+  /auth/signin:
+    post:
+      summary: Signin User
+      operationId: signin
+      requestBody:
+        description: Logging in user
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+        required: true
+      responses:
+        200:
+          description: User Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+  /book/{page}/{limit}:
+    get:
+      summary: Gett All books
+      operationId: getBooks
+      parameters:
+        - in: path
+          name: page
+          description: "Page number for pagination"
+          required: true
+          schema:
+            type: integer
+            example: 2
+        - in: path
+          name: limit
+          description: "Limit for items per page"
+          required: true
+          schema:
+            type: integer
+            example: 10
+      responses:
+        200:
+          description: Retrieving all books
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BookDto'
+  /payment:
+    post:
+      summary: Paying for order
+      operationId: payment
+      requestBody:
+        description: User Payment
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Payment'
+        required: true
+      responses:
+        200:
+          description: User Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+components:
+  schemas:
+    AuthRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    AuthResponse:
+      type: object
+      properties:
+        jwt:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        firstname:
+          type: string
+        lastname:
+          type: string
+    UserDto:
+      type: object
+      properties:
+        firstname:
+          type: string
+        lastname:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+        email:
+          type: string
+    BookDto:
+      type: object
+      properties:
+        bookid:
+          type: integer
+        title:
+          type: string
+        authors:
+          type: string
+        average_rating:
+          type: string
+        isbn:
+          type: string
+        language_code:
+          type: string
+        ratings_count:
+          type: string
+        price:
+          type: integer
+    Address:
+      type: object
+      properties:
+        addressLine1:
+          type: string
+        addressLine2:
+          type: string
+        state:
+          type: string
+        city:
+          type: string
+    ContactDetails:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+    Payment:
+      allOf:
+        - $ref: '#/components/schemas/Address'
+        - $ref: '#/components/schemas/ContactDetails'
+      type: object
+      properties:
+        amount:
+          type: integer
+    GenericResponse:
+      type: object
+      properties:
+        message:
+          type: string
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
